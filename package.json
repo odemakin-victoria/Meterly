@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-"dev": "next dev -p 5178",
+    "dev": "next dev -p 5178",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -29,6 +29,7 @@
     "js-cookie": "^3.0.5",
     "jsencrypt": "^3.3.2",
     "jspdf": "^2.5.1",
+    "lucide-react": "^0.536.0",
     "next": "^14.2.15",
     "openpgp": "^5.11.2",
     "react": "^18.3.1",
