@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import {
   ChevronLeft,
   Eye,
@@ -21,6 +21,11 @@ import Image from "next/image";
 import meterlyImage from "../../../public/assets/images/rafiki.svg";
 import LogoImage from "../../../public/assets/images/logo-image.svg";
 
+
+interface LayoutProps {
+  children: ReactNode;
+  showSidebar?: boolean;
+}
 const MeterlyApp = () => {
   const [currentPage, setCurrentPage] = useState("welcome");
   const [showPassword, setShowPassword] = useState(false);
@@ -43,20 +48,22 @@ const MeterlyApp = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleVerificationCode = (index:any, value:any) => {
-    if (value.length <= 1) {
-      const newCode = [...formData.verificationCode];
-      newCode[index] = value;
-      updateFormData("verificationCode", newCode);
+ const handleVerificationCode = (index: number, value: string) => {
+  if (value.length <= 1) {
+    const newCode = [...formData.verificationCode];
+    newCode[index] = value;
+    updateFormData("verificationCode", newCode);
 
-      if (value && index < 5) {
-        const nextInput = document.querySelector(
-          `input[data-index="${index + 1}"]`
-        );
-        if (nextInput) nextInput.focus();
-      }
+    if (value && index < 5) {
+      const nextInput = document.querySelector(
+        `input[data-index="${index + 1}"]`
+      ) as HTMLInputElement | null;
+
+      nextInput?.focus();
     }
-  };
+  }
+};
+
 
   const handleAmountSelect = (amount:any) => {
     setSelectedAmount(amount);
@@ -66,7 +73,7 @@ const MeterlyApp = () => {
   // Check if we're on desktop
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
-  const Layout = ({ children, showSidebar = false }) => (
+const Layout = ({ children, showSidebar = false }: LayoutProps) => (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex flex-col md:flex-row">
       {/* Left Side - Illustration (Hidden on mobile) */}
       <div className="hidden md:flex flex-1 items-center justify-center p-12">
@@ -1314,7 +1321,7 @@ const MeterlyApp = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2 flex items-center space-x-2">
+                <label className=" text-sm font-medium text-gray-600 mb-2 flex items-center space-x-2">
                   <span>CVV</span>
                   <button className="text-blue-600 text-sm">HELP?</button>
                 </label>
