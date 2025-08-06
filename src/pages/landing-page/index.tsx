@@ -23,11 +23,8 @@ import LogoImage from "../../../public/assets/images/meterly-img-long.png";
 import ArrowBack from "../../../public/assets/images/ic_round-arrow-back.svg";
 import keyIcon from "../../../public/assets/images/keyIcon2.svg";
 import Clock from "@/components/Clock/Clock";
-import {  FaSignOutAlt, FaUserCircle } from "react-icons/fa";
+import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 import usuageIcon from "../../../public/assets/images/bx_trip.svg";
-
-
-
 
 interface LayoutProps {
   children: ReactNode;
@@ -50,13 +47,11 @@ const MeterlyApp = () => {
     meterNumber: "",
     verificationCode: ["", "", "", "", "", ""],
   });
-	 const updateFormData = (field:any, value:any) => {
+  const updateFormData = (field: any, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
- 
 
-
-  const handleAmountSelect = (amount:any) => {
+  const handleAmountSelect = (amount: any) => {
     setSelectedAmount(amount);
     setCustomAmount("");
   };
@@ -64,7 +59,7 @@ const MeterlyApp = () => {
   // Check if we're on desktop
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
-const Layout = ({ children, showSidebar = false }: LayoutProps) => (
+  const Layout = ({ children, showSidebar = false }: LayoutProps) => (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white   flex flex-col md:flex-row">
       {/* Left Side - Illustration (Hidden on mobile) */}
       <div className="hidden md:flex  bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500flex-1 items-center justify-center p-12">
@@ -103,9 +98,7 @@ const Layout = ({ children, showSidebar = false }: LayoutProps) => (
       </div>
 
       {/* Right Side - Content */}
-      <div className="flex-1  shadow-2xl overflow-hidden">
-        {children}
-      </div>
+      <div className="flex-1  shadow-2xl overflow-hidden">{children}</div>
     </div>
   );
 
@@ -184,7 +177,7 @@ const Layout = ({ children, showSidebar = false }: LayoutProps) => (
       verificationCode: "",
     });
 
-    const updateFormData = (field:any, value:any) => {
+    const updateFormData = (field: any, value: any) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
@@ -192,22 +185,21 @@ const Layout = ({ children, showSidebar = false }: LayoutProps) => (
       <Layout>
         <div className="h-screen bg-white flex flex-col">
           {/* Header */}
-         
 
           {/* Content */}
           <div className="flex-1 px-6 py-8 overflow-y-auto">
-						 <div >
-            <button
-              onClick={() => setCurrentPage("welcome")}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-							 <img
-              src={ArrowBack.src}
-              alt="Logo"
-              className="w-6 h-6 object-contain rounded-lg"
-            />
-						            </button>
-          </div>
+            <div>
+              <button
+                onClick={() => setCurrentPage("welcome")}
+                className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <img
+                  src={ArrowBack.src}
+                  alt="Logo"
+                  className="w-6 h-6 object-contain rounded-lg"
+                />
+              </button>
+            </div>
             <div className="max-w-sm mx-auto">
               <h1 className="text-2xl font-bold text-[#1679E8] mb-2">
                 Let's get started
@@ -309,302 +301,293 @@ const Layout = ({ children, showSidebar = false }: LayoutProps) => (
     );
   };
 
-	 const VerifyEmailPage = () => {
-	  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
-    nin: "",
-    distributionCompany: "",
-    meterNumber: "",
-    verificationCode: ["", "", "", "", "", ""],
-  });
-	 const updateFormData = (field:any, value:any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
- const handleVerificationCode = (index: number, value: string) => {
-  if (value.length <= 1) {
-    const newCode = [...formData.verificationCode];
-    newCode[index] = value;
-    updateFormData("verificationCode", newCode);
+  const VerifyEmailPage = () => {
+    const [formData, setFormData] = useState({
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phone: "",
+      nin: "",
+      distributionCompany: "",
+      meterNumber: "",
+      verificationCode: ["", "", "", "", "", ""],
+    });
+    const updateFormData = (field: any, value: any) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+    const handleVerificationCode = (index: number, value: string) => {
+      if (value.length <= 1) {
+        const newCode = [...formData.verificationCode];
+        newCode[index] = value;
+        updateFormData("verificationCode", newCode);
 
-    if (value && index < 5) {
-      const nextInput = document.querySelector(
-        `input[data-index="${index + 1}"]`
-      ) as HTMLInputElement | null;
+        if (value && index < 5) {
+          const nextInput = document.querySelector(
+            `input[data-index="${index + 1}"]`
+          ) as HTMLInputElement | null;
 
-      nextInput?.focus();
-    }
-  }
-};
-const [resendTimer, setResendTimer] = useState(600);
-const [canResend, setCanResend] = useState(false);
+          nextInput?.focus();
+        }
+      }
+    };
+    const [resendTimer, setResendTimer] = useState(600);
+    const [canResend, setCanResend] = useState(false);
 
-useEffect(() => {
-  if (resendTimer > 0) {
-    const interval = setInterval(() => {
-      setResendTimer((prev) => prev - 1);
-    }, 1000);
+    useEffect(() => {
+      if (resendTimer > 0) {
+        const interval = setInterval(() => {
+          setResendTimer((prev) => prev - 1);
+        }, 1000);
 
-    return () => clearInterval(interval);
-  } else {
-    setCanResend(true);
-  }
-}, [resendTimer]);
+        return () => clearInterval(interval);
+      } else {
+        setCanResend(true);
+      }
+    }, [resendTimer]);
 
-const handleResend = () => {
-  // Logic to resend OTP (API call, toast, etc.)
-  setResendTimer(600);
-  setCanResend(false);
-};
+    const handleResend = () => {
+      // Logic to resend OTP (API call, toast, etc.)
+      setResendTimer(600);
+      setCanResend(false);
+    };
 
-const formatTime = (seconds: number) => {
-  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
-  const s = (seconds % 60).toString().padStart(2, "0");
-  return `${m}:${s}`;
-};
+    const formatTime = (seconds: number) => {
+      const m = Math.floor(seconds / 60)
+        .toString()
+        .padStart(2, "0");
+      const s = (seconds % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    };
 
     return (
-
-    <Layout>
-      <div className="min-h-screen bg-white flex flex-col">
-       
-
-        {/* Content */}
-        <div className="flex-1 px-6 py-8">
-						 <div >
-            <button
-              onClick={() => setCurrentPage("welcome")}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-							 <img
-              src={ArrowBack.src}
-              alt="Logo"
-              className="w-6 h-6 object-contain rounded-lg"
-            />
-						            </button>
-          </div>
-          <div className="max-w-sm mx-auto">
-              <h1 className="text-2xl font-bold text-[#1679E8] mb-2">
-              Verify Email
-            </h1>
-
-          <div className="flex flex-col items-center px-4 sm:px-2 ">
-          
-
-            <Image
-              src={keyIcon}
-              className="object-center object-contain my-4"
-              alt="otp icon"
-              width={50}
-              height={50}
-            />
-
-            <p className="my-5 text-[#475569] text-center font-medium text-sm sm:text-base ">
-              A one-time password has been sent to your registered email address 
-                <span className="block text-[#000] font-semibold mt-1">
-
-***npaul@***.com</span>       
-            
-            </p>
-
-            <p className="text-[#00143D] font-medium mb-4 text-sm sm:text-base">
-              Please enter the code here:
-            </p>
-
-             <div className="flex flex-wrap justify-center gap-2 mb-6">
-    {formData.verificationCode.map((digit, index) => (
-      <input
-        key={index}
-        data-index={index}
-        type="password" // 🔐 mask input as •
-        maxLength={1}
-        value={digit}
-        onChange={(e) => handleVerificationCode(index, e.target.value)}
-        className="w-12 sm:w-14 h-12 sm:h-14 text-center text-lg font-semibold border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-transform duration-200 transform focus:scale-105 bg-white"
-      />
-    ))}
-  </div>
-
-	<div className="text-center mt-2">
-  <p className="text-sm text-gray-600">
-    Didn’t receive an OTP?
-    <button
-      onClick={handleResend}
-      disabled={!canResend}
-      className={`ml-1 font-semibold ${
-        canResend
-          ? "text-blue-600 hover:underline"
-          : "text-gray-400 cursor-not-allowed"
-      }`}
-    >
-      Resend
-    </button>
-  </p>
-  {!canResend && (
-    <p className="text-xs text-gray-400 mt-1">
-      You can resend the code in {formatTime(resendTimer)}
-    </p>
-  )}
-</div>
-
-          </div>
-            
-
+      <Layout>
+        <div className="min-h-screen bg-white flex flex-col">
+          {/* Content */}
+          <div className="flex-1 px-6 py-8">
             <div>
- 
+              <button
+                onClick={() => setCurrentPage("welcome")}
+                className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <img
+                  src={ArrowBack.src}
+                  alt="Logo"
+                  className="w-6 h-6 object-contain rounded-lg"
+                />
+              </button>
+            </div>
+            <div className="max-w-sm mx-auto">
+              <h1 className="text-2xl font-bold text-[#1679E8] mb-2">
+                Verify Email
+              </h1>
 
- 
-</div>
+              <div className="flex flex-col items-center px-4 sm:px-2 ">
+                <Image
+                  src={keyIcon}
+                  className="object-center object-contain my-4"
+                  alt="otp icon"
+                  width={50}
+                  height={50}
+                />
 
+                <p className="my-5 text-[#475569] text-center font-medium text-sm sm:text-base ">
+                  A one-time password has been sent to your registered email
+                  address
+                  <span className="block text-[#000] font-semibold mt-1">
+                    ***npaul@***.com
+                  </span>
+                </p>
 
-            {/* Verify Button */}
-            <button
-              onClick={() => setCurrentPage("complete-profile")}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors mt-12 shadow-lg"
-            >
-              Verify
-            </button>
+                <p className="text-[#00143D] font-medium mb-4 text-sm sm:text-base">
+                  Please enter the code here:
+                </p>
+
+                <div className="flex flex-wrap justify-center gap-2 mb-6">
+                  {formData.verificationCode.map((digit, index) => (
+                    <input
+                      key={index}
+                      data-index={index}
+                      type="password" // 🔐 mask input as •
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) =>
+                        handleVerificationCode(index, e.target.value)
+                      }
+                      className="w-12 sm:w-14 h-12 sm:h-14 text-center text-lg font-semibold border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-transform duration-200 transform focus:scale-105 bg-white"
+                    />
+                  ))}
+                </div>
+
+                <div className="text-center mt-2">
+                  <p className="text-sm text-gray-600">
+                    Didn’t receive an OTP?
+                    <button
+                      onClick={handleResend}
+                      disabled={!canResend}
+                      className={`ml-1 font-semibold ${
+                        canResend
+                          ? "text-blue-600 hover:underline"
+                          : "text-gray-400 cursor-not-allowed"
+                      }`}
+                    >
+                      Resend
+                    </button>
+                  </p>
+                  {!canResend && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      You can resend the code in {formatTime(resendTimer)}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div></div>
+
+              {/* Verify Button */}
+              <button
+                onClick={() => setCurrentPage("complete-profile")}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors mt-12 shadow-lg"
+              >
+                Verify
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </Layout>
-	 )};
-  const CompleteProfilePage = () => {
-		 const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
-    nin: "",
-    distributionCompany: "",
-    meterNumber: "",
-    verificationCode: ["", "", "", "", "", ""],
-  });
-	 const updateFormData = (field:any, value:any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+      </Layout>
+    );
   };
-     return (
-
-    <Layout>
-      <div className="min-h-screen bg-white flex flex-col">
-     
-
-        {/* Content */}
-        <div className="flex-1 px-6 py-8 overflow-y-auto">
-					 <button
+  const CompleteProfilePage = () => {
+    const [formData, setFormData] = useState({
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phone: "",
+      nin: "",
+      distributionCompany: "",
+      meterNumber: "",
+      verificationCode: ["", "", "", "", "", ""],
+    });
+    const updateFormData = (field: any, value: any) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+    return (
+      <Layout>
+        <div className="min-h-screen bg-white flex flex-col">
+          {/* Content */}
+          <div className="flex-1 px-6 py-8 overflow-y-auto">
+            <button
               onClick={() => setCurrentPage("welcome")}
               className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-							 <img
-              src={ArrowBack.src}
-              alt="Logo"
-              className="w-6 h-6 object-contain rounded-lg"
-            />
-						            </button>
-          <div className="max-w-sm mx-auto">
+              <img
+                src={ArrowBack.src}
+                alt="Logo"
+                className="w-6 h-6 object-contain rounded-lg"
+              />
+            </button>
+            <div className="max-w-sm mx-auto">
               <h1 className="text-2xl font-bold text-[#1679E8] mb-2">
-              Complete your profile
-            </h1>
+                Complete your profile
+              </h1>
               <p className="text-[#545454] text-sm mb-8">
-              Please provide the correct and appropriate information.
-            </p>
+                Please provide the correct and appropriate information.
+              </p>
 
-            <div className="space-y-6">
-              {/* Phone Number */}
-              <div>
-                <label className="block text-[#545454] text-base mb-2">
-                  Phone Number:
-                </label>
-                <div className="flex">
-                  <div className="flex items-center px-3 py-3 bg-gray-50 border border-gray-200 rounded-l-lg border-r-0">
-                    <span className="text-gray-600 font-medium text-sm">+234</span>
+              <div className="space-y-6">
+                {/* Phone Number */}
+                <div>
+                  <label className="block text-[#545454] text-base mb-2">
+                    Phone Number:
+                  </label>
+                  <div className="flex">
+                    <div className="flex items-center px-3 py-3 bg-gray-50 border border-gray-200 rounded-l-lg border-r-0">
+                      <span className="text-gray-600 font-medium text-sm">
+                        +234
+                      </span>
+                    </div>
+                    <input
+                      type="tel"
+                      placeholder="9057456384"
+                      value={formData.phone}
+                      onChange={(e) => updateFormData("phone", e.target.value)}
+                      className="flex-1 text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
                   </div>
+                </div>
+
+                {/* National Identity Number */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    National Identity Number(NIN):
+                  </label>
                   <input
-                    type="tel"
-                    placeholder="9057456384"
-                    value={formData.phone}
-                    onChange={(e) => updateFormData("phone", e.target.value)}
-                    className="flex-1 text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    type="text"
+                    placeholder="Enter your NIN"
+                    value={formData.nin}
+                    onChange={(e) => updateFormData("nin", e.target.value)}
+                    className="w-full text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <p className="text-sm text-green-600 mt-2">
+                    Forgot NIN? Dial *346# to get NIN
+                  </p>
+                </div>
+
+                {/* Distribution Company */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Distribution Company:
+                  </label>
+                  <select
+                    value={formData.distributionCompany}
+                    onChange={(e) =>
+                      updateFormData("distributionCompany", e.target.value)
+                    }
+                    className="w-full text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                  >
+                    <option value="">Please select</option>
+                    <option value="aedc">
+                      Abuja Electricity Distribution Company (AEDC)
+                    </option>
+                    <option value="eko">
+                      Eko Electricity Distribution Company (EKEDC)
+                    </option>
+                    <option value="ibadan">
+                      Ibadan Electricity Distribution Company (IBEDC)
+                    </option>
+                    <option value="ikeja">Ikeja Electric Plc (IE)</option>
+                  </select>
+                </div>
+
+                {/* Meter Number */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Meter Number:
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Enter your Meter number"
+                    value={formData.meterNumber}
+                    onChange={(e) =>
+                      updateFormData("meterNumber", e.target.value)
+                    }
+                    className="w-full text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
-              {/* National Identity Number */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  National Identity Number(NIN):
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your NIN"
-                  value={formData.nin}
-                  onChange={(e) => updateFormData("nin", e.target.value)}
-                  className="w-full text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-sm text-green-600 mt-2">
-                  Forgot NIN? Dial *346# to get NIN
-                </p>
-              </div>
-
-              {/* Distribution Company */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Distribution Company:
-                </label>
-                <select
-                  value={formData.distributionCompany}
-                  onChange={(e) =>
-                    updateFormData("distributionCompany", e.target.value)
-                  }
-                  className="w-full text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
-                >
-                  <option value="">Please select</option>
-                  <option value="aedc">
-                    Abuja Electricity Distribution Company (AEDC)
-                  </option>
-                  <option value="eko">
-                    Eko Electricity Distribution Company (EKEDC)
-                  </option>
-                  <option value="ibadan">
-                    Ibadan Electricity Distribution Company (IBEDC)
-                  </option>
-                  <option value="ikeja">Ikeja Electric Plc (IE)</option>
-                </select>
-              </div>
-
-              {/* Meter Number */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Meter Number:
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter your Meter number"
-                  value={formData.meterNumber}
-                  onChange={(e) =>
-                    updateFormData("meterNumber", e.target.value)
-                  }
-                  className="w-full text-sm px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+              {/* Proceed Button */}
+              <button
+                onClick={() => setCurrentPage("registration-success")}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors mt-12 shadow-lg"
+              >
+                Proceed
+              </button>
             </div>
-
-            {/* Proceed Button */}
-            <button
-              onClick={() => setCurrentPage("registration-success")}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors mt-12 shadow-lg"
-            >
-              Proceed
-            </button>
           </div>
         </div>
-      </div>
-    </Layout>
-	)};
-
- 
+      </Layout>
+    );
+  };
 
   const RegistrationSuccessPage = () => (
     <Layout>
@@ -653,8 +636,6 @@ const formatTime = (seconds: number) => {
   const LoginPage = () => (
     <Layout>
       <div className="min-h-screen bg-white flex flex-col">
-     
-
         {/* Content */}
         <div className="flex-1 px-6 py-8">
           <div className="max-w-sm mx-auto">
@@ -663,7 +644,7 @@ const formatTime = (seconds: number) => {
               <Image
                 src={LogoImage}
                 alt="Meterly Illustration"
-              className="w-28  object-contain rounded-lg"
+                className="w-28  object-contain rounded-lg"
               />
             </div>
 
@@ -737,185 +718,201 @@ const formatTime = (seconds: number) => {
     </Layout>
   );
 
-const DashboardPage = () => {
+  const DashboardPage = () => {
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [showBalance, setShowBalance] = useState(true);
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-		return(
-    <div className="min-h-screen bg-gray-50 overflow-y-scroll pb-20">
-      {/* Header */}
+    return (
+      <div className="min-h-screen bg-gray-50 overflow-y-scroll pb-20">
+        {/* Header */}
         <div className="flex items-center justify-between h-full mt-8 px-4">
-       <div className="flex items-center">
+          <div className="flex items-center">
             <span className=" sm:inline text-[#1801CD] font-semibold truncate max-w-[520px]">
-                Hello, John
-              </span>
-        </div>
-        <div className="flex items-center gap-4 md:gap-6">
-          <div className="hidden lg:block">
-            <Clock className="text-sm leading-tight text-[#1801CD]" />
+              Hello, John
+            </span>
           </div>
-         
+          <div className="flex items-center gap-4 md:gap-6">
+            <div className="hidden lg:block">
+              <Clock className="text-sm leading-tight text-[#1801CD]" />
+            </div>
+
             <div className="relative">
-          <Bell className="w-6 h-6 text-gray-600" />
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-            <span className="text-xs text-white font-bold">2</span>
-          </div>
-        </div>
-          <div className="relative ">
+              <Bell className="w-6 h-6 text-gray-600" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-xs text-white font-bold">2</span>
+              </div>
+            </div>
+            <div className="relative ">
               <button
-              className="flex items-center gap-2"
-              onClick={() => setDropdownOpen((prev) => !prev)}
-            >
-              {/* Hide text on very small screens */}
-            
-              <span className="w-8 h-8 rounded-full bg-[#1801CD] flex items-center justify-center">
-                <FaUserCircle className="text-white" size={18} />
+                className="flex items-center gap-2"
+                onClick={() => setDropdownOpen((prev) => !prev)}
+              >
+                {/* Hide text on very small screens */}
+
+                <span className="w-8 h-8 rounded-full bg-[#1801CD] flex items-center justify-center">
+                  <FaUserCircle className="text-white" size={18} />
+                </span>
+              </button>
+
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
+                    onClick={() => setCurrentPage("register")}
+                  >
+                    Change Password
+                  </button>
+                  <button
+                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
+                    onClick={() => setCurrentPage("login")}
+                  >
+                    Logout
+                    <FaSignOutAlt className="ml-2" size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Balance Card */}
+        <div className="px-6 py-4">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-blue-100 text-sm">Meter Balance</p>
+                <p className="text-xs text-blue-200">
+                  Last Recharge: 05/04/2024
+                </p>
+              </div>
+              <Zap className="w-6 h-6 text-blue-200" />
+            </div>
+
+            <div className="flex items-center space-x-2 mb-4">
+              <span className="text-3xl font-bold">
+                {showBalance ? "₦ 5,350.00" : "₦ *****"}
               </span>
-            </button>
-            
+              <button
+                onClick={() => setShowBalance((prev) => !prev)}
+                className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                {showBalance ? (
+                  <Eye className="w-4 h-4 text-white" />
+                ) : (
+                  <EyeOff className="w-4 h-4 text-white" />
+                )}
+              </button>
+            </div>
 
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
-                onClick={() => setCurrentPage("register")}
-                >
-                  Change Password
-                </button>
-                <button
-                  className="w-full flex items-center justify-between px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
-                onClick={() => setCurrentPage("login")}
-                >
-                  Logout
-                  <FaSignOutAlt className="ml-2" size={14} />
-                </button>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-orange-300 text-sm font-medium">
+                  Meter Number
+                </p>
+                <div className="flex items-center space-x-2">
+                  <span className="text-white font-mono">34566775643</span>
+                  <Copy className="w-4 h-4 text-blue-200" />
+                </div>
               </div>
-            )}
-
-          </div>
-        </div>
-      </div>
-
-      {/* Balance Card */}
-      <div className="px-6 py-4">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-blue-100 text-sm">Meter Balance</p>
-              <p className="text-xs text-blue-200">Last Recharge: 05/04/2024</p>
-            </div>
-            <Zap className="w-6 h-6 text-blue-200" />
-          </div>
-
-          <div className="flex items-center space-x-2 mb-4">
-            <span className="text-3xl font-bold">₦ 5,350.00</span>
-            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-              <Eye className="w-4 h-4" />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-orange-300 text-sm font-medium">
-                Meter Number
-              </p>
-              <div className="flex items-center space-x-2">
-                <span className="text-white font-mono">34566775643</span>
-                <Copy className="w-4 h-4 text-blue-200" />
+              <div className="text-right">
+                <p className="text-white text-right">Unit: 400kwh</p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-white text-right">Unit: 400kwh</p>
+          </div>
+        </div>
+
+        {/* Page Indicators */}
+        <div className="flex justify-center py-2">
+          <div className="flex space-x-2">
+            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+          </div>
+        </div>
+
+        {/* Action Cards */}
+        <div className="px-6 grid grid-cols-2 gap-4 mb-6">
+          <button
+            onClick={() => setCurrentPage("recharge")}
+            className="bg-blue-100 p-6 rounded-2xl"
+          >
+            <div className="w-12 h-12  flex items-center justify-center ">
+              <Zap className="w-8 h-8 text-[#1679E8]" />
             </div>
-          </div>
-        </div>
-      </div>
+            <h3 className="font-semibold text-[#1679E8] text-left mb-2">
+              Recharge Meter
+            </h3>
+            <p className="text-sm text-gray-600 text-left">
+              Recharge your meter instantly. No queues, No stress, just power.
+            </p>
+          </button>
 
-      {/* Page Indicators */}
-      <div className="flex justify-center py-2">
-        <div className="flex space-x-2">
-          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-          <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-        </div>
-      </div>
-
-      {/* Action Cards */}
-      <div className="px-6 grid grid-cols-2 gap-4 mb-6">
-        <button
-          onClick={() => setCurrentPage("recharge")}
-          className="bg-blue-100 p-6 rounded-2xl"
-        >
-          <div className="w-12 h-12  flex items-center justify-center ">
-            <Zap className="w-8 h-8 text-[#1679E8]" />
-          </div>
-          <h3 className="font-semibold text-[#1679E8] text-left mb-2">Recharge Meter</h3>
-          <p className="text-sm text-gray-600 text-left">
-            Recharge your meter instantly. No queues, No stress, just power.
-          </p>
-        </button>
-
-        <button className="bg-orange-100 p-6 rounded-2xl">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-            <Image
+          <button className="bg-orange-100 p-6 rounded-2xl">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+              <Image
                 src={usuageIcon}
                 alt="Meterly Illustration"
-              className="w-20  object-contain rounded-lg"
+                className="w-20  object-contain rounded-lg"
               />
-          </div>
-          <h3 className="font-semibold text-left text-[#545454] mb-2">View Usage</h3>
-          <p className="text-sm text-left text-gray-600">
-            Track your electricity consumption in real time. Be informed
-          </p>
-        </button>
-      </div>
-
-      <div className="px-6 grid grid-cols-2 gap-4 mb-6">
-        <button className="bg-gray-200 p-6 rounded-2xl">
-          <div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
-            <History className="w-12 h-12 text-[#545454]" />
-          </div>
-          <h3 className="font-semibold text-left text-gray-900 mb-2">History</h3>
-          <p className="text-sm text-left text-gray-600">
-            See your recent unit purchases and meter top-ups.
-          </p>
-        </button>
-
-        <button className="bg-green-100 p-6 rounded-2xl">
-          <div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
-            <Lightbulb className="w-14 h-14 text-[#0F9D59]" />
-          </div>
-          <h3 className="font-semibold text-gray-900 mb-2">
-            Education and tips
-          </h3>
-          <p className="text-sm text-gray-600">
-            Practical tips to help you use electricity more efficiently.
-          </p>
-        </button>
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4">
-        <div className="flex justify-between">
-          <button className="flex flex-col items-center space-y-1">
-            <Home className="w-6 h-6 text-blue-600" />
-            <span className="text-xs text-blue-600 font-medium">Home</span>
-          </button>
-          <button className="flex flex-col items-center space-y-1">
-            <Zap className="w-6 h-6 text-gray-400" />
-            <span className="text-xs text-gray-400">Recharge</span>
-          </button>
-          <button className="flex flex-col items-center space-y-1">
-            <HelpCircle className="w-6 h-6 text-gray-400" />
-            <span className="text-xs text-gray-400">Help</span>
-          </button>
-          <button className="flex flex-col items-center space-y-1">
-            <User className="w-6 h-6 text-gray-400" />
-            <span className="text-xs text-gray-400">Account</span>
+            </div>
+            <h3 className="font-semibold text-left text-[#545454] mb-2">
+              View Usage
+            </h3>
+            <p className="text-sm text-left text-gray-600">
+              Track your electricity consumption in real time. Be informed
+            </p>
           </button>
         </div>
+
+        <div className="px-6 grid grid-cols-2 gap-4 mb-6">
+          <button className="bg-gray-200 p-6 rounded-2xl">
+            <div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
+              <History className="w-12 h-12 text-[#545454]" />
+            </div>
+            <h3 className="font-semibold text-left text-gray-900 mb-2">
+              History
+            </h3>
+            <p className="text-sm text-left text-gray-600">
+              See your recent unit purchases and meter top-ups.
+            </p>
+          </button>
+
+          <button className="bg-green-100 p-6 rounded-2xl">
+            <div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
+              <Lightbulb className="w-14 h-14 text-[#0F9D59]" />
+            </div>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Education and tips
+            </h3>
+            <p className="text-sm text-gray-600">
+              Practical tips to help you use electricity more efficiently.
+            </p>
+          </button>
+        </div>
+
+        {/* Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4">
+          <div className="flex justify-between">
+            <button className="flex flex-col items-center space-y-1">
+              <Home className="w-6 h-6 text-blue-600" />
+              <span className="text-xs text-blue-600 font-medium">Home</span>
+            </button>
+            <button className="flex flex-col items-center space-y-1">
+              <Zap className="w-6 h-6 text-gray-400" />
+              <span className="text-xs text-gray-400">Recharge</span>
+            </button>
+            <button className="flex flex-col items-center space-y-1">
+              <HelpCircle className="w-6 h-6 text-gray-400" />
+              <span className="text-xs text-gray-400">Help</span>
+            </button>
+            <button className="flex flex-col items-center space-y-1">
+              <User className="w-6 h-6 text-gray-400" />
+              <span className="text-xs text-gray-400">Account</span>
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  ) };
+    );
+  };
 
   const RechargePage = () => (
     <div className="min-h-screen bg-white">
@@ -925,13 +922,21 @@ const DashboardPage = () => {
           onClick={() => setCurrentPage("dashboard")}
           className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
-          <ChevronLeft className="w-6 h-6 text-gray-600" />
+          <img
+            src={ArrowBack.src}
+            alt="Logo"
+            className="w-6 h-6 object-contain rounded-lg"
+          />
         </button>
         <h1 className="flex-1 text-center text-lg font-semibold text-gray-900">
           Recharge Meter
         </h1>
         <button className="p-2">
-          <Zap className="w-6 h-6 text-blue-600" />
+          <Image
+            src={LogoImage}
+            alt="Meterly Illustration"
+            className="w-28  object-contain rounded-lg"
+          />{" "}
         </button>
       </div>
 
@@ -1000,7 +1005,7 @@ const DashboardPage = () => {
           onClick={() => setCurrentPage("payment-summary")}
           className="w-full bg-blue-100 text-blue-600 font-semibold py-4 px-6 rounded-xl transition-colors"
         >
-          Login
+          Proceed
         </button>
       </div>
     </div>
