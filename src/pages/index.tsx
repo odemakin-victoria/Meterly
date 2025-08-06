@@ -6,7 +6,6 @@ import LandingPage from "./landing-page/index"; // Adjusted path
 
 const Main = () => {
   const router = useRouter();
-  const { pathname, query } = router;
 
   useEffect(() => {
     //To reset incase an action is to be performed
