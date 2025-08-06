@@ -1,0 +1,24 @@
+<svg
+  width="296"
+  height="296"
+  viewBox="0 0 296 296"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <circle cx="148" cy="148" r="141.833" stroke="#00191F" stroke-width="12.3333" />
+  <circle
+    cx="148"
+    cy="148"
+    r="112.233"
+    stroke="#003F4D"
+    stroke-width="12.3333"
+  />
+  <circle cx="148" cy="148" r="74" stroke="#2B93AA" stroke-width="12.3333" />
+  <circle
+    cx="148"
+    cy="148"
+    r="38.2333"
+    stroke="#006980"
+    stroke-width="12.3333"
+  />
+</svg>

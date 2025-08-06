@@ -1,0 +1,10 @@
+.page-transition-appear,
+.page-transition-enter {
+    opacity: 0;
+}
+
+.page-transition-appear-active,
+.page-transition-enter-active {
+    opacity: 1;
+    transition: opacity 500ms;
+}
