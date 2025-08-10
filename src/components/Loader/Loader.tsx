@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { MdErrorOutline } from "react-icons/md";
-import leadwayLogo from "../../../public/assets/images/Image 1.svg"
+import LogoImage from "../../../public/assets/images/meterly-img-long.png";
 import Spinner from "../Spinner/Spinner";
 
 export interface AlertModalProps {
@@ -62,7 +62,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
         {loading ? (
           <div className="flex flex-col gap-5">
             <div className="flex flex-col justify-center items-center">
-              <Image src={leadwayLogo} alt="" width={200} height={200} />
+              <Image src={LogoImage} alt="" width={200} height={200} />
               {/* <h1 className="font-semibold text-[#311302]  text-[1rem]">
                 Leadway <br /> Trustee
               </h1> */}
@@ -89,7 +89,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
                 </button>
               )}
               <button
-                className="px-3 py-2 bg-[#EA5B0C] text-white rounded font-semibold mx-auto hover:bg-[#311302] w-1/2"
+                className="px-3 py-2 bg-blue-600 text-white rounded font-semibold mx-auto hover:bg-[#311302] w-1/2"
                 onClick={onConfirm}
               >
                 {confirmText}

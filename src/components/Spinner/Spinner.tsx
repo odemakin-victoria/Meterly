@@ -1,5 +1,5 @@
 import Image from "next/image";
-import spinner from "../../../public/assets/images/rollingspinner.gif";
+import spinner from "../../../public/assets/images/spinner.gif";
 
 interface ISpinnerProps {
   light?: boolean;
