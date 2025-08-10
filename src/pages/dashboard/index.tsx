@@ -31,12 +31,15 @@ import usuageIcon from "../../../public/assets/images/bx_trip.svg";
 import { FetchUserProfile } from "@/redux/thunk/auth";
 import { ElectricityMeter, ProfileUserResponse, RegisterInResponse } from "@/redux/types/auth";
 import { useAppDispatch } from "@/redux/hooks/hook";
+import { useRouter } from "next/router";
 
 interface LayoutProps {
 	children: ReactNode;
 	showSidebar?: boolean;
 }
 const MeterlyApp = () => {
+		const router = useRouter();
+
 	const [currentPage, setCurrentPage] = useState("dashboard");
 	const [selectedAmount, setSelectedAmount] = useState("");
 	const [customAmount, setCustomAmount] = useState("");
@@ -378,10 +381,14 @@ const MeterlyApp = () => {
 						<HelpCircle className="w-6 h-6 text-gray-400" />
 						<span className="text-xs text-gray-400">Help</span>
 					</button>
-					<button className="flex flex-col items-center space-y-1">
-						<User className="w-6 h-6 text-gray-400" />
-						<span className="text-xs text-gray-400">Account</span>
-					</button>
+					<button
+  onClick={() => router.push("/account")}
+  className="flex flex-col items-center space-y-1"
+>
+  <User className="w-6 h-6 text-gray-400" />
+  <span className="text-xs text-gray-400">Account</span>
+</button>
+
 				</div>
 			</div>
 		</div>
