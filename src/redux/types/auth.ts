@@ -132,3 +132,34 @@ export interface User {
   deviceType: string
 }
 
+
+
+export interface ProfileUserResponse {
+  id: number
+  fullName: string
+  email: string
+  phone: string
+  nin: string
+  isVerified: boolean
+  phoneNumberVerified: boolean
+  country: string
+  address: string
+  status: string
+  userAgent: string
+  createdAt: string
+  lastLogin: string
+  electricityMeters: ElectricityMeter[]
+}
+
+export interface ElectricityMeter {
+  id: number
+  meterNumber: string
+  meterName: string
+  meterAddress: string
+  meterType: string
+  disco: string
+  userId: number
+  createdAt: string
+  updatedAt: string
+}
+

@@ -19,6 +19,7 @@ import { useAppDispatch } from "@/redux/hooks/hook";
 import { ErrorResponse, LogUserInResponse, OnboardUserAttribute, OnboardUserResponse, RegisterInResponse } from "@/redux/types/auth";
 import { ForgetPassword, LoginUserIn, OnboardUser, RegisterUserIn, ResendOtp, ValidateOtp } from "@/redux/thunk/auth";
 import AlertModal from "@/components/Loader/Loader";
+import { storeCookie } from "@/utils";
 
 interface LayoutProps {
   children: ReactNode;
@@ -1667,6 +1668,11 @@ const LoginPage = () => {
       if (meta.requestStatus === "fulfilled") {
         let res = payload as LogUserInResponse;
         console.log(res, "This is a login");
+	
+        				storeCookie("MET_AT", res.accessToken);
+				storeCookie("MET_RT", res.refreshToken);
+				storeCookie("MET_FN", res.user.fullName);
+
         handleNavigation("/dashboard");
       }
 

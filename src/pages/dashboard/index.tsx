@@ -18,7 +18,8 @@ import {
 	 ChevronDown,
   BarChart3,
   TrendingUp,
-  RefreshCw
+  RefreshCw,
+	ChevronRight
 	
 } from "lucide-react";
 import Image from "next/image";
@@ -27,6 +28,9 @@ import ArrowBack from "../../../public/assets/images/ic_round-arrow-back.svg";
 import Clock from "@/components/Clock/Clock";
 import { FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 import usuageIcon from "../../../public/assets/images/bx_trip.svg";
+import { FetchUserProfile } from "@/redux/thunk/auth";
+import { ElectricityMeter, ProfileUserResponse, RegisterInResponse } from "@/redux/types/auth";
+import { useAppDispatch } from "@/redux/hooks/hook";
 
 interface LayoutProps {
 	children: ReactNode;
@@ -52,200 +56,337 @@ const MeterlyApp = () => {
 
 
 	const DashboardPage = () => {
-		const [dropdownOpen, setDropdownOpen] = useState(false);
-		const [showBalance, setShowBalance] = useState(true);
+	const dispatch = useAppDispatch();
+	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [showBalance, setShowBalance] = useState(true);
+	const [currentMeterIndex, setCurrentMeterIndex] = useState(0);
+	const [userProfile, setUserProfile] = useState({
+		fullName: "",
+		email: "",
+		electricityMeters: [] as ElectricityMeter[],
+		loading: true,
+	});
 
-		return (
-			<div className="min-h-screen bg-gray-50 overflow-y-scroll pb-20">
-				{/* Header */}
-				<div className="flex items-center justify-between h-full mt-8 px-4">
-					<div className="flex items-center">
-						<span className=" sm:inline text-[#1801CD] font-semibold truncate max-w-[520px]">
-							Hello, John
-						</span>
-					</div>
-					<div className="flex items-center gap-4 md:gap-6">
-						<div className="hidden lg:block">
-							<Clock className="text-sm leading-tight text-[#1801CD]" />
-						</div>
+	// Fetch user profile when component mounts
+	useEffect(() => {
+		const fetchProfile = async () => {
+			try {
+				const result = await dispatch(FetchUserProfile());
+				const { meta, payload } = result;
+				
+				if (meta.requestStatus === "fulfilled") {
+					const profileData = payload as ProfileUserResponse;
+					console.log(profileData, "this is a profile");
+			
+					setUserProfile({
+						fullName: profileData.fullName || "User",
+						email: profileData.email || "",
+						electricityMeters: profileData.electricityMeters || [],
+						loading: false,
+					});
+				}
+				
+				if (meta.requestStatus === "rejected") {
+					// Fallback to localStorage if API fails
+					const storedName = localStorage.getItem("fullName") || "User";
+					setUserProfile({
+						fullName: storedName,
+						email: "",
+						electricityMeters: [],
+						loading: false,
+					});
+					console.error("Failed to fetch user profile:", payload);
+				}
+			} catch (error) {
+				// Fallback to localStorage if there's an error
+				const storedName = localStorage.getItem("fullName") || "User";
+				setUserProfile({
+					fullName: storedName,
+					email: "",
+					electricityMeters: [],
+					loading: false,
+				});
+				console.error("Error fetching user profile:", error);
+			}
+		};
 
-						<div className="relative">
-							<Bell className="w-6 h-6 text-gray-600" />
-							<div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-								<span className="text-xs text-white font-bold">2</span>
-							</div>
-						</div>
-						<div className="relative ">
-							<button
-								className="flex items-center gap-2"
-								onClick={() => setDropdownOpen((prev) => !prev)}
-							>
-								{/* Hide text on very small screens */}
+		fetchProfile();
+	}, [dispatch]);
 
-								<span className="w-8 h-8 rounded-full bg-[#1801CD] flex items-center justify-center">
-									<FaUserCircle className="text-white" size={18} />
-								</span>
-							</button>
+	// Handle meter card navigation
+	const handlePrevMeter = () => {
+		if (userProfile.electricityMeters.length > 0) {
+			setCurrentMeterIndex((prev) => 
+				prev === 0 ? userProfile.electricityMeters.length - 1 : prev - 1
+			);
+		}
+	};
 
-							{dropdownOpen && (
-								<div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
-									<button
-										className="w-full text-left px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
-										onClick={() => setCurrentPage("register")}
-									>
-										Change Password
-									</button>
-									<button
-										className="w-full flex items-center justify-between px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
-										onClick={() => setCurrentPage("login")}
-									>
-										Logout
-										<FaSignOutAlt className="ml-2" size={14} />
-									</button>
-								</div>
-							)}
-						</div>
-					</div>
-				</div>
+	const handleNextMeter = () => {
+		if (userProfile.electricityMeters.length > 0) {
+			setCurrentMeterIndex((prev) => 
+				prev === userProfile.electricityMeters.length - 1 ? 0 : prev + 1
+			);
+		}
+	};
 
-				{/* Balance Card */}
-				<div className="px-6 py-4">
-					<div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-						<div className="flex items-center justify-between mb-4">
-							<div>
-								<p className="text-blue-100 text-sm">Meter Balance</p>
-								<p className="text-xs text-blue-200">
-									Last Recharge: 05/04/2024
-								</p>
-							</div>
-							<Zap className="w-6 h-6 text-blue-200" />
-						</div>
+	// Get current meter data
+	const currentMeter = userProfile.electricityMeters[currentMeterIndex];
 
-						<div className="flex items-center space-x-2 mb-4">
-							<span className="text-3xl font-bold">
-								{showBalance ? "₦ 5,350.00" : "₦ *****"}
+	return (
+		<div className="min-h-screen bg-gray-50 overflow-y-scroll pb-20">
+			{/* Header */}
+			<div className="flex items-center justify-between h-full mt-8 px-4">
+				<div className="flex items-center">
+					<span className=" sm:inline text-[#1801CD] font-semibold truncate max-w-[520px]">
+						{userProfile.loading ? (
+							<span className="flex items-center">
+								<span className="animate-pulse bg-gray-300 h-4 w-20 rounded"></span>
 							</span>
-							<button
-								onClick={() => setShowBalance((prev) => !prev)}
-								className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center"
-							>
-								{showBalance ? (
-									<Eye className="w-4 h-4 text-white" />
-								) : (
-									<EyeOff className="w-4 h-4 text-white" />
-								)}
-							</button>
-						</div>
+						) : (
+							`Hello, ${userProfile.email.split(' ')[0] || 'User'}`
+						)}
+					</span>
+				</div>
+				<div className="flex items-center gap-4 md:gap-6">
+					<div className="hidden lg:block">
+						<Clock className="text-sm leading-tight text-[#1801CD]" />
+					</div>
 
-						<div className="flex items-center justify-between">
-							<div>
-								<p className="text-orange-300 text-sm font-medium">
-									Meter Number
-								</p>
-								<div className="flex items-center space-x-2">
-									<span className="text-white font-mono">34566775643</span>
-									<Copy className="w-4 h-4 text-blue-200" />
-								</div>
-							</div>
-							<div className="text-right">
-								<p className="text-white text-right">Unit: 400kwh</p>
-							</div>
+					<div className="relative">
+						<Bell className="w-6 h-6 text-gray-600" />
+						<div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+							<span className="text-xs text-white font-bold">2</span>
 						</div>
 					</div>
-				</div>
-
-				{/* Page Indicators */}
-				<div className="flex justify-center py-2">
-					<div className="flex space-x-2">
-						<div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-						<div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-					</div>
-				</div>
-
-				{/* Action Cards */}
-				<div className="px-6 grid grid-cols-2 gap-4 mb-6">
-					<button
-						onClick={() => setCurrentPage("recharge")}
-						className="bg-blue-100 p-6 rounded-2xl"
-					>
-						<div className="w-12 h-12  flex items-center justify-center ">
-							<Zap className="w-8 h-8 text-[#1679E8]" />
-						</div>
-						<h3 className="font-semibold text-[#1679E8] text-left mb-2">
-							Recharge Meter
-						</h3>
-						<p className="text-sm text-gray-600 text-left">
-							Recharge your meter instantly. No queues, No stress, just power.
-						</p>
-					</button>
-
-					<button className="bg-orange-100 p-6 rounded-2xl">
-						<div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4">
-							<Image
-								src={usuageIcon}
-								alt="Meterly Illustration"
-								className="w-20  object-contain rounded-lg"
-							/>
-						</div>
-						<h3 className="font-semibold text-left text-[#545454] mb-2">
-							View Usage
-						</h3>
-						<p className="text-sm text-left text-gray-600">
-							Track your electricity consumption in real time. Be informed
-						</p>
-					</button>
-				</div>
-
-				<div className="px-6 grid grid-cols-2 gap-4 mb-6">
-					<button className="bg-gray-200 p-6 rounded-2xl">
-						<div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
-							<History className="w-12 h-12 text-[#545454]" />
-						</div>
-						<h3 className="font-semibold text-left text-gray-900 mb-2">
-							History
-						</h3>
-						<p className="text-sm text-left text-gray-600">
-							See your recent unit purchases and meter top-ups.
-						</p>
-					</button>
-
-					<button className="bg-green-100 p-6 rounded-2xl">
-						<div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
-							<Lightbulb className="w-14 h-14 text-[#0F9D59]" />
-						</div>
-						<h3 className="font-semibold text-gray-900 mb-2">
-							Education and tips
-						</h3>
-						<p className="text-sm text-gray-600">
-							Practical tips to help you use electricity more efficiently.
-						</p>
-					</button>
-				</div>
-
-				{/* Bottom Navigation */}
-				<div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4">
-					<div className="flex justify-between">
-						<button className="flex flex-col items-center space-y-1">
-							<Home className="w-6 h-6 text-blue-600" />
-							<span className="text-xs text-blue-600 font-medium">Home</span>
+					<div className="relative ">
+						<button
+							className="flex items-center gap-2"
+							onClick={() => setDropdownOpen((prev) => !prev)}
+						>
+							<span className="w-8 h-8 rounded-full bg-[#1801CD] flex items-center justify-center">
+								<FaUserCircle className="text-white" size={18} />
+							</span>
 						</button>
-						<button className="flex flex-col items-center space-y-1">
-							<Zap className="w-6 h-6 text-gray-400" />
-							<span className="text-xs text-gray-400">Recharge</span>
-						</button>
-						<button className="flex flex-col items-center space-y-1">
-							<HelpCircle className="w-6 h-6 text-gray-400" />
-							<span className="text-xs text-gray-400">Help</span>
-						</button>
-						<button className="flex flex-col items-center space-y-1">
-							<User className="w-6 h-6 text-gray-400" />
-							<span className="text-xs text-gray-400">Account</span>
-						</button>
+
+						{dropdownOpen && (
+							<div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
+								<button
+									className="w-full text-left px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
+									onClick={() => setCurrentPage("register")}
+								>
+									Change Password
+								</button>
+								<button
+									className="w-full flex items-center justify-between px-4 py-2 text-sm text-[#1801CD] hover:bg-blue-50"
+									onClick={() => setCurrentPage("login")}
+								>
+									Logout
+									<FaSignOutAlt className="ml-2" size={14} />
+								</button>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
-		);
-	};
+
+			{/* Balance Card */}
+			<div className="px-6 py-4">
+				{userProfile.loading ? (
+					<div className="bg-gray-200 animate-pulse rounded-2xl p-6 h-40"></div>
+				) : userProfile.electricityMeters.length === 0 ? (
+					<div className="bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl p-6 text-white">
+						<div className="text-center">
+							<Zap className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+							<h3 className="text-lg font-semibold mb-2">No Meter Connected</h3>
+							<p className="text-gray-200">Please add an electricity meter to get started</p>
+						</div>
+					</div>
+				) : (
+					<div className="relative">
+						{/* Navigation arrows for multiple meters */}
+						{userProfile.electricityMeters.length > 1 && (
+							<>
+								<button
+									onClick={handlePrevMeter}
+									className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-3 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+								>
+									<ChevronLeft className="w-5 h-5 text-gray-600" />
+								</button>
+								<button
+									onClick={handleNextMeter}
+									className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-3 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+								>
+									<ChevronRight className="w-5 h-5 text-gray-600" />
+								</button>
+							</>
+						)}
+
+						<div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+							<div className="flex items-center justify-between mb-4">
+								<div>
+									<p className="text-blue-100 text-sm">Meter Balance</p>
+									<p className="text-xs text-blue-200">
+										{currentMeter?.meterName || 'Primary Meter'}
+									</p>
+									<p className="text-xs text-blue-200">
+										Last Recharge: 05/04/2024
+									</p>
+								</div>
+								<Zap className="w-6 h-6 text-blue-200" />
+							</div>
+
+							<div className="flex items-center space-x-2 mb-4">
+								<span className="text-3xl font-bold">
+									{showBalance ? "₦ 5,350.00" : "₦ *****"}
+								</span>
+								<button
+									onClick={() => setShowBalance((prev) => !prev)}
+									className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center"
+								>
+									{showBalance ? (
+										<Eye className="w-4 h-4 text-white" />
+									) : (
+										<EyeOff className="w-4 h-4 text-white" />
+									)}
+								</button>
+							</div>
+
+							<div className="flex items-center justify-between">
+								<div>
+									<p className="text-orange-300 text-sm font-medium">
+										Meter Number
+									</p>
+									<div className="flex items-center space-x-2">
+										<span className="text-white font-mono">
+											{currentMeter?.meterNumber || 'N/A'}
+										</span>
+										<button className="hover:bg-white/10 p-1 rounded">
+											<Copy className="w-4 h-4 text-blue-200" />
+										</button>
+									</div>
+									{currentMeter?.disco && (
+										<p className="text-xs text-blue-200 mt-1">
+											{currentMeter.disco}
+										</p>
+									)}
+								</div>
+								<div className="text-right">
+									<p className="text-white text-right">Unit: 400kwh</p>
+									{currentMeter?.meterAddress && (
+										<p className="text-xs text-blue-200 mt-1">
+											{currentMeter.meterAddress}
+										</p>
+									)}
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+			</div>
+
+			{/* Page Indicators - Show only if multiple meters */}
+			{userProfile.electricityMeters.length > 1 && (
+				<div className="flex justify-center py-2">
+					<div className="flex space-x-2">
+						{userProfile.electricityMeters.map((_, index) => (
+							<button
+								key={index}
+								onClick={() => setCurrentMeterIndex(index)}
+								className={`w-2 h-2 rounded-full transition-colors ${
+									index === currentMeterIndex ? 'bg-gray-600' : 'bg-gray-300'
+								}`}
+							/>
+						))}
+					</div>
+				</div>
+			)}
+
+			{/* Action Cards */}
+			<div className="px-6 grid grid-cols-2 gap-4 mb-6">
+				<button
+					onClick={() => setCurrentPage("recharge")}
+					className="bg-blue-100 p-6 rounded-2xl"
+					disabled={userProfile.electricityMeters.length === 0}
+				>
+					<div className="w-12 h-12  flex items-center justify-center ">
+						<Zap className="w-8 h-8 text-[#1679E8]" />
+					</div>
+					<h3 className="font-semibold text-[#1679E8] text-left mb-2">
+						Recharge Meter
+					</h3>
+					<p className="text-sm text-gray-600 text-left">
+						Recharge your meter instantly. No queues, No stress, just power.
+					</p>
+				</button>
+
+				<button className="bg-orange-100 p-6 rounded-2xl">
+					<div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+						<Image
+							src={usuageIcon}
+							alt="Meterly Illustration"
+							className="w-20  object-contain rounded-lg"
+						/>
+					</div>
+					<h3 className="font-semibold text-left text-[#545454] mb-2">
+						View Usage
+					</h3>
+					<p className="text-sm text-left text-gray-600">
+						Track your electricity consumption in real time. Be informed
+					</p>
+				</button>
+			</div>
+
+			<div className="px-6 grid grid-cols-2 gap-4 mb-6">
+				<button className="bg-gray-200 p-6 rounded-2xl">
+					<div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
+						<History className="w-12 h-12 text-[#545454]" />
+					</div>
+					<h3 className="font-semibold text-left text-gray-900 mb-2">
+						History
+					</h3>
+					<p className="text-sm text-left text-gray-600">
+						See your recent unit purchases and meter top-ups.
+					</p>
+				</button>
+
+				<button className="bg-green-100 p-6 rounded-2xl">
+					<div className="w-12 h-12  rounded-xl flex items-center justify-center mb-4">
+						<Lightbulb className="w-14 h-14 text-[#0F9D59]" />
+					</div>
+					<h3 className="font-semibold text-gray-900 mb-2">
+						Education and tips
+					</h3>
+					<p className="text-sm text-gray-600">
+						Practical tips to help you use electricity more efficiently.
+					</p>
+				</button>
+			</div>
+
+			{/* Bottom Navigation */}
+			<div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4">
+				<div className="flex justify-between">
+					<button className="flex flex-col items-center space-y-1">
+						<Home className="w-6 h-6 text-blue-600" />
+						<span className="text-xs text-blue-600 font-medium">Home</span>
+					</button>
+					<button className="flex flex-col items-center space-y-1">
+						<Zap className="w-6 h-6 text-gray-400" />
+						<span className="text-xs text-gray-400">Recharge</span>
+					</button>
+					<button className="flex flex-col items-center space-y-1">
+						<HelpCircle className="w-6 h-6 text-gray-400" />
+						<span className="text-xs text-gray-400">Help</span>
+					</button>
+					<button className="flex flex-col items-center space-y-1">
+						<User className="w-6 h-6 text-gray-400" />
+						<span className="text-xs text-gray-400">Account</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	);
+};
 
 	const RechargePage = () => (
 		<div className="min-h-screen bg-white">
