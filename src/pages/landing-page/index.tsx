@@ -16,8 +16,8 @@ import ArrowBack from "../../../public/assets/images/ic_round-arrow-back.svg";
 import keyIcon from "../../../public/assets/images/keyIcon2.svg";
 import { useRouter } from "next/router";
 import { useAppDispatch } from "@/redux/hooks/hook";
-import { ErrorResponse, OnboardUserAttribute, OnboardUserResponse, RegisterInResponse } from "@/redux/types/auth";
-import { LoginUserIn, OnboardUser, RegisterUserIn, ResendOtp, ValidateOtp } from "@/redux/thunk/auth";
+import { ErrorResponse, LogUserInResponse, OnboardUserAttribute, OnboardUserResponse, RegisterInResponse } from "@/redux/types/auth";
+import { ForgetPassword, LoginUserIn, OnboardUser, RegisterUserIn, ResendOtp, ValidateOtp } from "@/redux/thunk/auth";
 import AlertModal from "@/components/Loader/Loader";
 
 interface LayoutProps {
@@ -1548,6 +1548,13 @@ const LoginPage = () => {
     icon: "",
   });
 
+  // New state for forgot password modal
+  const [forgotPasswordState, setForgotPasswordState] = useState({
+    show: false,
+    email: "",
+    loading: false,
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -1556,6 +1563,88 @@ const LoginPage = () => {
 
   const updateFormData = (field: any, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Handle forgot password modal
+  const handleForgotPasswordClick = () => {
+    setForgotPasswordState((prev) => ({
+      ...prev,
+      show: true,
+      email: formData.email, // Pre-fill with login email if available
+    }));
+  };
+
+  const handleForgotPasswordSubmit = async () => {
+    if (!forgotPasswordState.email.trim()) {
+      setAlertState((prev) => ({
+        ...prev,
+        show: true,
+        loading: false,
+        title: "Please enter your email address",
+        icon: "error",
+      }));
+      return;
+    }
+
+    try {
+      setForgotPasswordState((prev) => ({ ...prev, loading: true }));
+
+      const result = await dispatch(
+        ForgetPassword({
+          email: forgotPasswordState.email,
+        })
+      );
+
+      const { meta, payload } = result;
+      
+      if (meta.requestStatus === "fulfilled") {
+        // Close forgot password modal
+        setForgotPasswordState({
+          show: false,
+          email: "",
+          loading: false,
+        });
+        
+        // Show success alert
+        setAlertState((prev) => ({
+          ...prev,
+          show: true,
+          loading: false,
+          title: "Password reset email sent successfully!",
+          message: "Please check your email for password reset instructions.",
+          icon: "success",
+        }));
+      }
+
+      if (meta.requestStatus === "rejected") {
+        const errorObj = payload as ErrorResponse;
+        setForgotPasswordState((prev) => ({ ...prev, loading: false }));
+        setAlertState((prev) => ({
+          ...prev,
+          show: true,
+          loading: false,
+          title: errorObj?.errorMsg || "Failed to send reset email",
+          icon: "error",
+        }));
+      }
+    } catch (error) {
+      setForgotPasswordState((prev) => ({ ...prev, loading: false }));
+      setAlertState((prev) => ({
+        ...prev,
+        show: true,
+        loading: false,
+        title: "Something went wrong. Please try again",
+        icon: "error",
+      }));
+    }
+  };
+
+  const closeForgotPasswordModal = () => {
+    setForgotPasswordState({
+      show: false,
+      email: "",
+      loading: false,
+    });
   };
 
   const LoginUserAccount = async () => {
@@ -1576,7 +1665,7 @@ const LoginPage = () => {
 
       const { meta, payload } = result;
       if (meta.requestStatus === "fulfilled") {
-        let res = payload as RegisterInResponse;
+        let res = payload as LogUserInResponse;
         console.log(res, "This is a login");
         handleNavigation("/dashboard");
       }
@@ -1671,7 +1760,10 @@ const LoginPage = () => {
                   </button>
                 </div>
                 <div className="text-right mt-2">
-                  <button className="text-blue-600 text-sm hover:underline">
+                  <button 
+                    onClick={handleForgotPasswordClick}
+                    className="text-blue-600 text-sm hover:underline"
+                  >
                     Forgot your Password?
                   </button>
                 </div>
@@ -1699,17 +1791,86 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {forgotPasswordState.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">
+                Reset Password
+              </h2>
+              <button
+                onClick={closeForgotPasswordModal}
+                className="text-gray-400 hover:text-gray-600"
+                disabled={forgotPasswordState.loading}
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <p className="text-gray-600 mb-6">
+              Enter your email address and we'll send you instructions to reset your password.
+            </p>
+            
+            <div className="mb-6">
+              <label className="block text-gray-700 font-medium mb-2">
+                Email Address:
+              </label>
+              <input
+                type="email"
+                value={forgotPasswordState.email}
+                onChange={(e) => setForgotPasswordState(prev => ({
+                  ...prev,
+                  email: e.target.value
+                }))}
+                placeholder="Enter your email address"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={forgotPasswordState.loading}
+              />
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={closeForgotPasswordModal}
+                className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                disabled={forgotPasswordState.loading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForgotPasswordSubmit}
+                disabled={forgotPasswordState.loading}
+                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {forgotPasswordState.loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  'Send Reset Email'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <AlertModal
         title={alertState.title}
         show={alertState.show}
         icon={alertState.icon}
         loading={alertState.loading}
         onConfirm={alertState.onConfirm}
+        message={alertState.message}
       />
     </Layout>
   );
 };
-
 
  
 

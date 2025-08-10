@@ -11,7 +11,10 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // ✅ Skip ESLint errors during build
   },
-  output: "standalone", // ✅ Required for hosting on IIS
+	  swcMinify: true,
+  // This can help with serverless deployment
+
+  output: 'standalone',
 };
 
 export default nextConfig;

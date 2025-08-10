@@ -7,17 +7,31 @@ export type LogUserInAttributes = {
   Password?: string;
 };
 
-export type LogUserInResponse = {
-  AccessToken: string;
-	DisplayName: string;
-	RefreshToken: string;
-	Department:string;
 
-  // RefreshToken: {
-  //   tokenString: string;
-  //   expireAt: string;
-  // };
-};
+export interface LogUserInResponse {
+  accessToken: string
+  refreshToken: string
+  expiresIn: number
+  user: User
+}
+
+export interface User {
+  fullName: any
+  email: string
+  phone: any
+  nin: any
+  isVerified: boolean
+  phoneNumberVerified: boolean
+  country: string
+  address: any
+  status: string
+  userAgent: string
+  createdAt: string
+  updatedAt: string
+  lastLogin: string
+  deviceType: string
+}
+
 export type RegisterInResponse = {
 userAgent: string
   email: string
@@ -114,7 +128,7 @@ export interface User {
   userAgent: string
   createdAt: string
   updatedAt: string
-  lastLogin: any
+  lastLogin: string
   deviceType: string
 }
 

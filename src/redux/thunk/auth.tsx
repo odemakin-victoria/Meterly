@@ -99,7 +99,7 @@ export const LoginUserIn = createAsyncThunk<
       return res_data;
       
     } catch (err: any) {
-      console.log(err, "the error in catch");
+      console.log(err, "the error in forget password catch");
       
       let errobj = {
         errorCode: "",
@@ -110,7 +110,24 @@ export const LoginUserIn = createAsyncThunk<
       if (err.response && err.response.data) {
         const errorData = err.response.data;
         
+        // Handle the new error format: { "status": "Failed", "errors": { ... } }
         if (
+          typeof errorData === "object" &&
+          errorData !== null &&
+          errorData.status === "Failed" &&
+          errorData.errors
+        ) {
+          // Extract error messages from the errors object
+          const errors = errorData.errors;
+          const errorMessages = Object.values(errors) as string[];
+          
+          errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
+          errobj.errorMsg = errorMessages.length > 0 
+            ? errorMessages.join(", ") 
+            : "Validation error occurred";
+        } 
+        // Handle the old error format: { "responseCode": "...", "responseMessage": "..." }
+        else if (
           typeof errorData === "object" &&
           errorData !== null &&
           "responseCode" in errorData
@@ -121,16 +138,19 @@ export const LoginUserIn = createAsyncThunk<
           };
           errobj.errorCode = typedError.responseCode;
           errobj.errorMsg = typedError.responseMessage;
-          console.log(typedError.responseMessage);
-        } else {
+        } 
+        // Handle generic error format
+        else {
           errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
-          errobj.errorMsg = errorData.message || "An unexpected error occurred";
+          errobj.errorMsg = errorData.message || "Failed to send reset email";
         }
       } else {
         errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
         errobj.errorMsg = err.message || "Network error occurred";
       }
 
+      console.log("Final error object:", errobj);
+      
       // Use rejectWithValue to return the error object
       return thunkApi.rejectWithValue(errobj);
     }
@@ -290,8 +310,8 @@ export const OnboardUser = createAsyncThunk<
       // This is the key fix - you need to return the data for fulfilled case
       return res_data;
       
-    } catch (err: any) {
-      console.log(err, "the error in catch");
+   } catch (err: any) {
+      console.log(err, "the error in forget password catch");
       
       let errobj = {
         errorCode: "",
@@ -302,7 +322,24 @@ export const OnboardUser = createAsyncThunk<
       if (err.response && err.response.data) {
         const errorData = err.response.data;
         
+        // Handle the new error format: { "status": "Failed", "errors": { ... } }
         if (
+          typeof errorData === "object" &&
+          errorData !== null &&
+          errorData.status === "Failed" &&
+          errorData.errors
+        ) {
+          // Extract error messages from the errors object
+          const errors = errorData.errors;
+          const errorMessages = Object.values(errors) as string[];
+          
+          errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
+          errobj.errorMsg = errorMessages.length > 0 
+            ? errorMessages.join(", ") 
+            : "Validation error occurred";
+        } 
+        // Handle the old error format: { "responseCode": "...", "responseMessage": "..." }
+        else if (
           typeof errorData === "object" &&
           errorData !== null &&
           "responseCode" in errorData
@@ -313,30 +350,35 @@ export const OnboardUser = createAsyncThunk<
           };
           errobj.errorCode = typedError.responseCode;
           errobj.errorMsg = typedError.responseMessage;
-          console.log(typedError.responseMessage);
-        } else {
+        } 
+        // Handle generic error format
+        else {
           errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
-          errobj.errorMsg = errorData.message || "An unexpected error occurred";
+          errobj.errorMsg = errorData.message || "Failed to send reset email";
         }
       } else {
         errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
         errobj.errorMsg = err.message || "Network error occurred";
       }
 
+      console.log("Final error object:", errobj);
+      
       // Use rejectWithValue to return the error object
       return thunkApi.rejectWithValue(errobj);
     }
   }
 );
 
+
+
 export const ForgetPassword = createAsyncThunk<
   RegisterInResponse,
   RegisterInAttribute
 >(
-  "opti2.0/registerUser", // Fixed the action type name to be more accurate
+  "auth/forgetPassword",
   async (param, thunkApi) => {
     try {
-      console.log(param, "this is register param");
+      console.log(param, "this is forget password param");
       
       const result = await axios.post(
         `/api/auth/forgetPassword`,
@@ -348,16 +390,16 @@ export const ForgetPassword = createAsyncThunk<
         }
       );
 
-      console.log(result, "this is the response from the api");
+      console.log(result, "this is the response from the forget password api");
       
       let decrypted_res = result.data;
       let res_data = decrypted_res.data as RegisterInResponse;
       
-      // This is the key fix - you need to return the data for fulfilled case
+      // Return the data for fulfilled case
       return res_data;
       
     } catch (err: any) {
-      console.log(err, "the error in catch");
+      console.log(err, "the error in forget password catch");
       
       let errobj = {
         errorCode: "",
@@ -368,7 +410,24 @@ export const ForgetPassword = createAsyncThunk<
       if (err.response && err.response.data) {
         const errorData = err.response.data;
         
+        // Handle the new error format: { "status": "Failed", "errors": { ... } }
         if (
+          typeof errorData === "object" &&
+          errorData !== null &&
+          errorData.status === "Failed" &&
+          errorData.errors
+        ) {
+          // Extract error messages from the errors object
+          const errors = errorData.errors;
+          const errorMessages = Object.values(errors) as string[];
+          
+          errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
+          errobj.errorMsg = errorMessages.length > 0 
+            ? errorMessages.join(", ") 
+            : "Validation error occurred";
+        } 
+        // Handle the old error format: { "responseCode": "...", "responseMessage": "..." }
+        else if (
           typeof errorData === "object" &&
           errorData !== null &&
           "responseCode" in errorData
@@ -379,16 +438,19 @@ export const ForgetPassword = createAsyncThunk<
           };
           errobj.errorCode = typedError.responseCode;
           errobj.errorMsg = typedError.responseMessage;
-          console.log(typedError.responseMessage);
-        } else {
+        } 
+        // Handle generic error format
+        else {
           errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
-          errobj.errorMsg = errorData.message || "An unexpected error occurred";
+          errobj.errorMsg = errorData.message || "Failed to send reset email";
         }
       } else {
         errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
         errobj.errorMsg = err.message || "Network error occurred";
       }
 
+      console.log("Final error object:", errobj);
+      
       // Use rejectWithValue to return the error object
       return thunkApi.rejectWithValue(errobj);
     }
