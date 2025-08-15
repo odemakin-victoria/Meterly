@@ -826,7 +826,7 @@ useEffect(() => {
 
     const calculateEstimatedUnits = () => {
       const amount = parseFloat(customAmount) || 0;
-      const ratePerUnit = 100;
+      const ratePerUnit = 209.5;
       return (amount / ratePerUnit).toFixed(2);
     };
 
@@ -987,13 +987,13 @@ useEffect(() => {
                   className="w-4 h-4 text-gray-400"
                 />
                 <div className="ml-3">
-                  <div className="font-medium text-gray-500">Card Payment</div>
-                  <div className="text-sm text-gray-400">Pay with debit/credit card (Coming Soon)</div>
+                  <div className="font-medium text-gray-500">POS</div>
+                  <div className="text-sm text-gray-400">Pay via POS  (Coming Soon)</div>
                 </div>
               </label>
 
               {/* Bank Transfer - Disabled */}
-              <label className="flex items-center p-4 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed opacity-60">
+              {/* <label className="flex items-center p-4 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed opacity-60">
                 <input 
                   type="radio" 
                   name="payment" 
@@ -1005,7 +1005,7 @@ useEffect(() => {
                   <div className="font-medium text-gray-500">Bank Transfer</div>
                   <div className="text-sm text-gray-400">Pay via bank transfer (Coming Soon)</div>
                 </div>
-              </label>
+              </label> */}
             </div>
           </div>
 
