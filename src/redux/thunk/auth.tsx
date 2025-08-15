@@ -283,18 +283,23 @@ export const ResendOtp = createAsyncThunk<
   }
 );
 
-export const OnboardUser = createAsyncThunk<
+// Updated thunk - OnboardingUser
+export const OnboardingUser = createAsyncThunk<
   OnboardUserResponse,
   OnboardUserAttribute
 >(
-  "opti2.0/registerUser", // Fixed the action type name to be more accurate
+  "opti2.0/registerUser",
   async (param, thunkApi) => {
     try {
       console.log(param, "this is register param");
       
+      // ✅ Extract token and create URL with token in the path
+      const { token, ...bodyData } = param;
+      
+      // ✅ Include token in the URL path
       const result = await axios.post(
-        `/api/auth/onboarding`,
-        param,
+        `/api/auth/onboarding-user/${encodeURIComponent(token)}`,
+        bodyData, // Send everything except token in body
         {
           headers: {
             Accept: "application/json",
@@ -310,8 +315,8 @@ export const OnboardUser = createAsyncThunk<
       // This is the key fix - you need to return the data for fulfilled case
       return res_data;
       
-   } catch (err: any) {
-      console.log(err, "the error in forget password catch");
+    } catch (err: any) {
+      console.log(err, "the error in onboarding user catch");
       
       let errobj = {
         errorCode: "",
@@ -337,7 +342,8 @@ export const OnboardUser = createAsyncThunk<
           errobj.errorMsg = errorMessages.length > 0 
             ? errorMessages.join(", ") 
             : "Validation error occurred";
-        } 
+        }
+        
         // Handle the old error format: { "responseCode": "...", "responseMessage": "..." }
         else if (
           typeof errorData === "object" &&
@@ -350,11 +356,12 @@ export const OnboardUser = createAsyncThunk<
           };
           errobj.errorCode = typedError.responseCode;
           errobj.errorMsg = typedError.responseMessage;
-        } 
+        }
+        
         // Handle generic error format
         else {
           errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];
-          errobj.errorMsg = errorData.message || "Failed to send reset email";
+          errobj.errorMsg = errorData.message || "Failed to complete onboarding";
         }
       } else {
         errobj.errorCode = ERROR_CODE_TYPES["GENERAL_ERROR"];

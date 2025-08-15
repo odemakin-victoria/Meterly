@@ -92,6 +92,7 @@ export type ResendOtpInResponse = {
 
 
 export interface OnboardUserAttribute {
+	token:string;
   fullName: string
   phone: string
   nin: string
@@ -159,7 +160,11 @@ export interface ElectricityMeter {
   meterType: string
   disco: string
   userId: number
+  meterBalance: string
+  lastRecharge: any
   createdAt: string
   updatedAt: string
+  units: number
 }
+
 

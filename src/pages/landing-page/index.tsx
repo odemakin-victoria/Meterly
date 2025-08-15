@@ -17,7 +17,7 @@ import keyIcon from "../../../public/assets/images/keyIcon2.svg";
 import { useRouter } from "next/router";
 import { useAppDispatch } from "@/redux/hooks/hook";
 import { ErrorResponse, LogUserInResponse, OnboardUserAttribute, OnboardUserResponse, RegisterInResponse } from "@/redux/types/auth";
-import { ForgetPassword, LoginUserIn, OnboardUser, RegisterUserIn, ResendOtp, ValidateOtp } from "@/redux/thunk/auth";
+import { ForgetPassword, LoginUserIn, OnboardingUser, RegisterUserIn, ResendOtp, ValidateOtp } from "@/redux/thunk/auth";
 import AlertModal from "@/components/Loader/Loader";
 import { storeCookie } from "@/utils";
 
@@ -589,7 +589,9 @@ const RegisterAccount = async () => {
   // Load registration data on component mount
   useEffect(() => {
     const storedData = localStorage.getItem('registrationData');
-    if (storedData) {
+    		console.log(storedData, "thsi verify is the data store in local storag eemail")
+
+		if (storedData) {
       try {
         const parsed = JSON.parse(storedData);
         setRegistrationData(parsed);
@@ -753,7 +755,6 @@ const RegisterAccount = async () => {
       const { meta, payload } = result;
       if (meta.requestStatus === "fulfilled") {
         // Clear stored registration data
-        localStorage.removeItem('registrationData');
         
         setAlertState((prev) => ({
           ...prev,
@@ -937,7 +938,30 @@ const RegisterAccount = async () => {
 };
  const CompleteProfilePage = () => {
   const dispatch = useAppDispatch();
-  
+    // Get registration data from localStorage or props
+  const [registrationData, setRegistrationData] = useState<{
+    email: string;
+    requestId: string;
+  } | null>(null);
+	 // Load registration data on component mount
+  useEffect(() => {
+    const storedData = localStorage.getItem('registrationData');
+		console.log(storedData, "thsi is the data store in local storag eemail")
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        setRegistrationData(parsed);
+      } catch (error) {
+        console.error('Error parsing registration data:', error);
+        // Redirect back to registration if no valid data
+        setCurrentPage("complete-profile");
+      }
+    } else {
+      // Redirect back to registration if no data found
+      setCurrentPage("complete-profile");
+    }
+  }, []);
+
   const [alertState, setAlertState] = useState({
     loading: false,
     show: false,
@@ -1099,80 +1123,95 @@ const RegisterAccount = async () => {
     setShowConfirmation(true);
   };
 
-  const handleConfirmOnboarding = async () => {
-    try {
-      setShowConfirmation(false);
-      setAlertState((prev) => ({
-        ...prev,
-        show: true,
-        loading: true,
-        title: "Completing your profile...",
-      }));
+ const handleConfirmOnboarding = async () => {
+  try {
+    setShowConfirmation(false);
+    setAlertState((prev) => ({
+      ...prev,
+      show: true,
+      loading: true,
+      title: "Completing your profile...",
+    }));
 
-      // Prepare the payload according to the API interface
-      const onboardPayload: OnboardUserAttribute = {
-        fullName: formData.fullName.trim(),
-        phone: formData.phone.trim(),
-        nin: formData.nin.trim(),
-        address: formData.address.trim(),
-        meter: {
-          meterNumber: formData.meterNumber.trim(),
-          meterName: formData.fullName.trim(), // Using fullName as meterName
-          meterAddress: formData.address.trim(), // Using address as meterAddress
-          meterType: formData.meterType,
-          disco: formData.distributionCompany, // Distribution company
-        },
-      };
+    // Debug: Check if registrationData exists and has email
+    console.log("Registration data:", registrationData);
+    
+    if (!registrationData?.email) {
+      throw new Error("No email found in registration data");
+    }
 
-      const result = await dispatch(OnboardUser(onboardPayload));
+    // Prepare the payload according to the API interface
+    const onboardPayload: OnboardUserAttribute = {
+      token: btoa(registrationData.email), // Convert email to base64 string
+      fullName: formData.fullName.trim(),
+      phone: formData.phone.trim(),
+      nin: formData.nin.trim(),
+      address: formData.address.trim(),
+      meter: {
+        meterNumber: formData.meterNumber.trim(),
+        meterName: formData.fullName.trim(),
+        meterAddress: formData.address.trim(),
+        meterType: formData.meterType,
+        disco: formData.distributionCompany,
+      },
+    };
 
-      const { meta, payload } = result;
-      if (meta.requestStatus === "fulfilled") {
-        const res = payload as OnboardUserResponse;
-        console.log(res, "Onboarding successful");
+    // Debug: Log the token being sent
+    // console.log("Token being sent:", onboardPayload.token);
+    console.log("Original email:", registrationData.email);
+    console.log("Base64 token:", btoa(registrationData.email));
 
-        // Store access token and user info
-        localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("refreshToken", res.refreshToken);
-        localStorage.setItem("fullName", res.user.fullName || formData.fullName);
-        
-        // Clear registration data as user is now fully onboarded
-        localStorage.removeItem("registrationData");
+    const result = await dispatch(OnboardingUser(onboardPayload));
 
-        setAlertState((prev) => ({
-          ...prev,
-          show: true,
-          loading: false,
-          title: "Profile completed successfully!",
-          icon: "success",
-        }));
+    const { meta, payload } = result;
+    if (meta.requestStatus === "fulfilled") {
+      const res = payload as OnboardUserResponse;
+      console.log(res, "Onboarding successful");
+        localStorage.removeItem('registrationData');
 
-        // Redirect to success page
-        setTimeout(() => {
-          setCurrentPage("registration-success");
-        }, 2000);
-      }
+      // Store access token and user info
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("refreshToken", res.refreshToken);
+      localStorage.setItem("fullName", res.user.fullName || formData.fullName);
+      
+      // Clear registration data as user is now fully onboarded
+      localStorage.removeItem("registrationData");
 
-      if (meta.requestStatus === "rejected") {
-        const errorObj = payload as ErrorResponse;
-        setAlertState((prev) => ({
-          ...prev,
-          show: true,
-          loading: false,
-          title: errorObj?.errorMsg || "Failed to complete profile",
-          icon: "error",
-        }));
-      }
-    } catch (error) {
       setAlertState((prev) => ({
         ...prev,
         show: true,
         loading: false,
-        title: "Something went wrong. Please try again",
+        title: "Profile completed successfully!",
+        icon: "success",
+      }));
+
+      // Redirect to success page
+      setTimeout(() => {
+        setCurrentPage("registration-success");
+      }, 2000);
+    }
+
+    if (meta.requestStatus === "rejected") {
+      const errorObj = payload as ErrorResponse;
+      setAlertState((prev) => ({
+        ...prev,
+        show: true,
+        loading: false,
+        title: errorObj?.errorMsg || "Failed to complete profile",
         icon: "error",
       }));
     }
-  };
+  } catch (error) {
+    console.error("Error in handleConfirmOnboarding:", error);
+    setAlertState((prev) => ({
+      ...prev,
+      show: true,
+      loading: false,
+      title: "Something went wrong. Please try again",
+      icon: "error",
+    }));
+  }
+};
 
   const getDistributionCompanyName = (value: string) => {
     const companies = {
@@ -1672,6 +1711,8 @@ const LoginPage = () => {
         				storeCookie("MET_AT", res.accessToken);
 				storeCookie("MET_RT", res.refreshToken);
 				storeCookie("MET_FN", res.user.fullName);
+								storeCookie("MET_EMAIL", res.user.email);
+
 
         handleNavigation("/dashboard");
       }
