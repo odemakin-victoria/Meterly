@@ -563,7 +563,7 @@ useEffect(() => {
     // Calculate estimated units (assuming ₦100 = 1 kWh, adjust as needed)
     const calculateEstimatedUnits = () => {
       const amount = parseFloat(customAmount) || 0;
-      const ratePerUnit = 100; // ₦100 per kWh - adjust this based on your actual rate
+      const ratePerUnit = 209.5; // ₦100 per kWh - adjust this based on your actual rate
       return (amount / ratePerUnit).toFixed(2);
     };
 
@@ -736,7 +736,7 @@ useEffect(() => {
                   {calculateEstimatedUnits()} kWh
                 </span>
                 <span className="text-green-600 text-sm ml-2">
-                  (Rate: ₦100/kWh)
+                  (Rate: ₦209.5/kWh)
                 </span>
               </div>
             </div>
