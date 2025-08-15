@@ -586,7 +586,7 @@ useEffect(() => {
     };
 
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen mb-16 overflow-y-scroll bg-white">
         {/* Header */}
         <div className="flex items-center px-6 py-4 border-b border-gray-100">
           <button
@@ -852,7 +852,7 @@ useEffect(() => {
 			
 
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen mb-16 overflow-y-scroll bg-white">
         {/* Header */}
         <div className="flex items-center px-6 py-4 border-b border-gray-100">
           <button
@@ -1148,7 +1148,7 @@ useEffect(() => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen mb-16 overflow-y-scroll bg-white">
             {/* Header */}
             <div className="flex items-center px-6 py-4 border-b border-gray-100">
                 <button

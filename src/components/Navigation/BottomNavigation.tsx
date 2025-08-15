@@ -104,7 +104,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-50">
+    <div className="fixed bottom-0  left-0 right-0 bg-white border-t border-gray-200 px-6 py-3 z-50">
       <div className="flex justify-between">
         {navigationItems.map((item) => {
           const Icon = item.icon;
