@@ -1218,7 +1218,7 @@ const RegisterAccount = async () => {
       aedc: "Abuja Electricity Distribution Company (AEDC)",
       eko: "Eko Electricity Distribution Company (EKEDC)",
       ibadan: "Ibadan Electricity Distribution Company (IBEDC)",
-      ikeja: "Ikeja Electric Plc (IE)",
+      ikeja: "Ikeja Electric Plc (IKEDC)",
     };
     return companies[value as keyof typeof companies] || value;
   };
@@ -1378,7 +1378,7 @@ const RegisterAccount = async () => {
                   <option value="IBEDC">
                     Ibadan Electricity Distribution Company (IBEDC)
                   </option>
-                  <option value="IE">Ikeja Electric Plc (IE)</option>
+                  <option value="IKEDC">Ikeja Electric Plc (IKEDC)</option>
                 </select>
                 {touched.distributionCompany && errors.distributionCompany && (
                   <p className="text-red-500 text-sm mt-1">{errors.distributionCompany}</p>
